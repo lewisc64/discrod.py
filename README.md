@@ -13,6 +13,6 @@ def ready(data):
 
 @bot.on_message
 def message(data):
-    if data["author"]["username"] != bot.user["username"]:
+    if data["author"]["id"] != bot.user["id"]:
         bot.send_message(data["channel_id"], data["content"])
 ```
