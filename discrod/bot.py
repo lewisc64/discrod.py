@@ -95,8 +95,8 @@ class Bot:
     
     def send_message(self, channel_id, content):
 
-        if len(content) == 0 or len(content) > 2000:
-            raise ValueError("Message length must be >= 0 and <= 2000.")
+        if len(content) <= 0 or len(content) > 2000:
+            raise ValueError("Message length must be > 0 and <= 2000.")
 
         self._rate_limit_channel_request(channel_id)
 
@@ -112,8 +112,8 @@ class Bot:
 
     def edit_message(self, channel_id, message_id, content):
         
-        if len(content) == 0 or len(content) > 2000:
-            raise ValueError("Message length must be >= 0 and <= 2000.")
+        if len(content) <= 0 or len(content) > 2000:
+            raise ValueError("Message length must be > 0 and <= 2000.")
 
         self._rate_limit_channel_request(channel_id)
 

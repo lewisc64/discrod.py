@@ -116,9 +116,9 @@ class Gateway:
                     if listener["t"] is not None:
                         name += "-" + listener["t"]
                     if listener["pass_data"]:
-                        Thread(target=listener["func"], args=(data["d"],), name=name).start()
+                        Thread(target=listener["func"], args=(data["d"],), name=name, daemon=True).start()
                     else:
-                        Thread(target=listener["func"], name=name).start()
+                        Thread(target=listener["func"], name=name, daemon=True).start()
                     if listener["temp"]:
                         self._listeners[data["op"]].remove(listener)
 
