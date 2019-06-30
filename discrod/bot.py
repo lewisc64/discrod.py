@@ -89,7 +89,7 @@ class Bot:
             r = method_func(full_path, headers=headers, data=json.dumps(body))
         
         if r.status_code != 200 and r.status_code != 204:
-            raise Exception("{} {}".format(r.status_code, r.reason))
+            logging.warning("{} {}".format(r.status_code, r.reason))
 
         return r
     
@@ -106,23 +106,43 @@ class Bot:
         }
 
         r = self._request(requests.post, "/channels/{}/messages".format(channel_id), body=body)
-        
         self._reset_limits_from_headers(self._rate_limits["channel"][channel_id], r.headers)
-        
-        if r.status_code != 200:
-            raise Exception("{} {}".format(r.status_code, r.reason))
 
-    def send_typing(self, channel_id):
+        return r.json()
+
+    def edit_message(self, channel_id, message_id, content):
         
+        if len(content) == 0 or len(content) > 2000:
+            raise ValueError("Message length must be >= 0 and <= 2000.")
+
         self._rate_limit_channel_request(channel_id)
 
-        r = self._request(requests.post, "/channels/{}/typing".format(channel_id))
-        
-        self._reset_limits_from_headers(self._rate_limits["channel"][channel_id], r.headers)
-        
-        if r.status_code != 204:
-            raise Exception("{} {}".format(r.status_code, r.reason))
+        body = {
+            "content": content
+        }
 
+        r = self._request(requests.patch, "/channels/{}/messages/{}".format(channel_id, message_id), body=body)
+        self._reset_limits_from_headers(self._rate_limits["channel"][channel_id], r.headers)
+
+        return r.json()
+    
+    def send_typing(self, channel_id):
+        self._rate_limit_channel_request(channel_id)
+        r = self._request(requests.post, "/channels/{}/typing".format(channel_id))
+        self._reset_limits_from_headers(self._rate_limits["channel"][channel_id], r.headers)
+
+    def modify_channel(self, channel_id, **settings):
+        """ Settings kwargs can have the values listed here: https://ptb.discordapp.com/developers/docs/resources/channel#modify-channel """
+        
+        self._rate_limit_channel_request(channel_id)
+        r = self._request(requests.patch, "/channels/{}".format(channel_id), body=settings)
+        self._reset_limits_from_headers(self._rate_limits["channel"][channel_id], r.headers)
+
+    def delete_channel(self, channel_id):
+        self._rate_limit_channel_request(channel_id)
+        r = self._request(requests.delete, "/channels/{}".format(channel_id))
+        self._reset_limits_from_headers(self._rate_limits["channel"][channel_id], r.headers)
+    
     def get_channel(self, channel_id):
         return self._request(requests.get, "channels/{}".format(channel_id)).json()
 

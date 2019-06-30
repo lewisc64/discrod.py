@@ -1,6 +1,6 @@
 # discrod.py
 
-This was created for learning purposes. It does do rate limiting, so if you do wish to use it, here is an example of an echo bot:
+This was created for learning purposes. Doesn't abstract what discord sends. It does do rate limiting, so if you do wish to use it, here is an example of an echo bot:
 
 ```python
 import discrod

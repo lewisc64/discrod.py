@@ -55,7 +55,7 @@ class Gateway:
         self._ws.on_message = self._on_message
 
         logging.info("{} is connecting.".format(self.get_name()))
-        self._ws_thread = Thread(target=self._ws.run_forever)
+        self._ws_thread = Thread(target=self._ws.run_forever, name=self.get_name())
         self._ws_thread.start()
 
     def get_name(self):
@@ -112,10 +112,13 @@ class Gateway:
         if data["op"] in self._listeners:
             for listener in self._listeners[data["op"]]:
                 if listener["t"] == data["t"]:
+                    name = "Listener-{}".format(data["op"])
+                    if listener["t"] is not None:
+                        name += "-" + listener["t"]
                     if listener["pass_data"]:
-                        Thread(target=listener["func"], args=(data["d"],)).start()
+                        Thread(target=listener["func"], args=(data["d"],), name=name).start()
                     else:
-                        Thread(target=listener["func"]).start()
+                        Thread(target=listener["func"], name=name).start()
                     if listener["temp"]:
                         self._listeners[data["op"]].remove(listener)
 
