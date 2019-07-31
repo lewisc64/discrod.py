@@ -8,6 +8,8 @@ import logging
 from . import HTTP_API_ENDPOINT
 from .gateway import *
 
+log = logging.getLogger(__name__)
+
 class Bot:
     
     def __init__(self, token, shards=1):
@@ -89,7 +91,7 @@ class Bot:
             r = method_func(full_path, headers=headers, data=json.dumps(body))
         
         if r.status_code != 200 and r.status_code != 204:
-            logging.warning("{} {}".format(r.status_code, r.reason))
+            log.warning("{} {}".format(r.status_code, r.reason))
 
         return r
     

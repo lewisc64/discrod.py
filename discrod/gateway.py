@@ -5,6 +5,8 @@ import json
 import time
 import logging
 
+log = logging.getLogger(__name__)
+
 from . import WS_API_ENDPOINT
 
 class Gateway:
@@ -54,7 +56,7 @@ class Gateway:
         self._ws = websocket.WebSocketApp(WS_API_ENDPOINT)
         self._ws.on_message = self._on_message
 
-        logging.info("{} is connecting.".format(self.get_name()))
+        log.info("{} is connecting.".format(self.get_name()))
         self._ws_thread = Thread(target=self._ws.run_forever, name=self.get_name())
         self._ws_thread.start()
 
@@ -64,11 +66,11 @@ class Gateway:
     def send_json(self, data):
         self._ws.send(json.dumps(data))
         if self.log_socket_messages:
-            logging.debug("{} SENT: {}".format(self.get_name(), data))
+            log.debug("{} SENT: {}".format(self.get_name(), data))
 
     def _ready(self, data):
         
-        logging.info("{} is ready.".format(self.get_name()))
+        log.info("{} is ready.".format(self.get_name()))
         
         self._session_id = data["session_id"]
         
@@ -107,7 +109,7 @@ class Gateway:
         self._sequence = data["s"]
 
         if self.log_socket_messages:
-            logging.debug("{} RECIEVED: {}".format(self.get_name(), data))
+            log.debug("{} RECIEVED: {}".format(self.get_name(), data))
 
         if data["op"] in self._listeners:
             for listener in self._listeners[data["op"]]:
