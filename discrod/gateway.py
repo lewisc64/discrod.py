@@ -50,7 +50,7 @@ class Gateway:
         self.add_listener(Gateway.DISPATCH, self._ready, event_type="READY")
         self.add_listener(Gateway.HEARTBEAT_ACK, self._heart, pass_data=False)
         self.add_listener(Gateway.RECONNECT, self._reconnect, pass_data=False)
-        self.add_listener(Gateway.INVALID_SESSION, lambda: logging.warning("{} has an invalid session.".format(self.get_name())), pass_data=False)
+        self.add_listener(Gateway.INVALID_SESSION, lambda: log.warning("{} has an invalid session.".format(self.get_name())), pass_data=False)
         self.add_listener(Gateway.INVALID_SESSION, self._reconnect, pass_data=False)
 
         self._ws = websocket.WebSocketApp(WS_API_ENDPOINT)
@@ -86,13 +86,13 @@ class Gateway:
         time.sleep(self.heartbeat_interval / 1000)
         
         if session != self._session_id:
-            logging.warning("{}'s session changed while waiting. Dropping heartbeat.".format(self.get_name()))
+            log.warning("{}'s session changed while waiting. Dropping heartbeat.".format(self.get_name()))
             return
         
         try:
             self.send_json({"op":Gateway.HEARTBEAT, "d":self._sequence})
         except:
-            logging.warning("{} is experiencing a cardiac arrest!".format(self.get_name()))
+            log.warning("{} is experiencing a cardiac arrest!".format(self.get_name()))
 
         self.last_heartbeat = time.time()
 
@@ -125,7 +125,7 @@ class Gateway:
                         self._listeners[data["op"]].remove(listener)
 
     def _reconnect(self):
-        logging.warning("{} is reconnecting.".format(self.get_name()))
+        log.warning("{} is reconnecting.".format(self.get_name()))
         self._ws.close()
 
         #self.add_listener(Gateway.HELLO, lambda: self.send_json({
